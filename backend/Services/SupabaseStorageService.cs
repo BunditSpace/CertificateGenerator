@@ -129,7 +129,13 @@ public sealed class SupabaseStorageService
         using var request = CreateSupabaseRequest(HttpMethod.Post, $"/storage/v1/object/{bucket}/{normalizedPath}");
         request.Headers.Add("x-upsert", "true");
         request.Content = new StreamContent(content);
-        request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        if (content.CanSeek)
+        {
+            request.Content.Headers.ContentLength = content.Length;
+        }
+        request.Content.Headers.ContentType = MediaTypeHeaderValue.TryParse(contentType, out var parsedType)
+            ? parsedType
+            : new MediaTypeHeaderValue("application/octet-stream");
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)

@@ -28,6 +28,12 @@ export class DocumentApiService {
     });
   }
 
+  downloadSampleExcel(config: TemplateConfig): Observable<Blob> {
+    return this.http.post(`${this.baseUrl}/api/documents/sample-excel`, config, {
+      responseType: 'blob',
+    });
+  }
+
   generateBatch(excelFile: File, config: TemplateConfig): Observable<GenerateJobQueuedResponse> {
     const formData = new FormData();
     formData.append('file', excelFile);

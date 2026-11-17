@@ -7,7 +7,16 @@
       </p>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        (click)="downloadSampleExcel()"
+        [disabled]="isDownloadingSample"
+        class="rounded-lg border border-indigo-200 bg-indigo-50 px-3.5 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 cursor-pointer"
+      >
+        {{ isDownloadingSample ? 'กำลังสร้างตัวอย่าง...' : 'ดาวน์โหลด Excel ตัวอย่าง' }}
+      </button>
+
       <label class="cursor-pointer rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
         <span>{{ selectedExcelFile ? selectedExcelFile.name : 'เลือกไฟล์ Excel (.xlsx)' }}</span>
         <input

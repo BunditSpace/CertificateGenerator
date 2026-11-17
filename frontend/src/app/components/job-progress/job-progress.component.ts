@@ -19,6 +19,7 @@ export class JobProgressComponent implements OnDestroy {
 
   selectedExcelFile: File | null = null;
   isSubmitting = false;
+  isDownloadingSample = false;
   submitError: string | null = null;
   jobStatus: JobStatusUpdate | null = null;
 
@@ -39,6 +40,28 @@ export class JobProgressComponent implements OnDestroy {
     const file = input.files?.[0] ?? null;
     this.selectedExcelFile = file;
     this.submitError = null;
+  }
+
+  downloadSampleExcel(): void {
+    this.isDownloadingSample = true;
+    this.submitError = null;
+
+    this.api.downloadSampleExcel(this.config).subscribe({
+      next: (blob) => {
+        this.isDownloadingSample = false;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'certificate-template.xlsx';
+        link.click();
+        URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        this.isDownloadingSample = false;
+        this.submitError =
+          err?.error?.error ?? err?.message ?? 'ไม่สามารถดาวน์โหลดไฟล์ Excel ตัวอย่างได้';
+      },
+    });
   }
 
   startBatchGeneration(): void {

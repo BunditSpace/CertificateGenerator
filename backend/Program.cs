@@ -1,6 +1,7 @@
 using System.Text.Json;
 using CertificateGenerator.Api.Models;
 using CertificateGenerator.Api.Services;
+using ClosedXML.Excel;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Bulk Certificate & Payslip Generator API",
+        Title = "Certificate Generator API",
         Version = "v1",
         Description = "API for template asset upload, single PDF preview, batch Excel-to-PDF generation, and SSE progress streaming."
     });
@@ -55,6 +56,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTime
 app.MapPost("/api/assets/upload", async (
     HttpRequest httpRequest,
     SupabaseStorageService storageService,
+    ILogger<Program> logger,
     CancellationToken cancellationToken) =>
 {
     if (!httpRequest.HasFormContentType)
@@ -70,28 +72,38 @@ app.MapPost("/api/assets/upload", async (
     }
 
     var contentType = string.IsNullOrWhiteSpace(file.ContentType) ? "image/png" : file.ContentType;
-    if (storageService.IsConfigured)
+    try
     {
-        var ext = Path.GetExtension(file.FileName);
-        if (string.IsNullOrWhiteSpace(ext)) ext = ".png";
-        var objectPath = $"{Guid.NewGuid():N}{ext}";
+        if (storageService.IsConfigured)
+        {
+            var ext = Path.GetExtension(file.FileName);
+            if (string.IsNullOrWhiteSpace(ext)) ext = ".png";
+            var objectPath = $"{Guid.NewGuid():N}{ext}";
 
-        await using var stream = file.OpenReadStream();
-        var publicUrl = await storageService.UploadFileAsync(
-            storageService.TemplatesBucket,
-            objectPath,
-            stream,
-            contentType,
-            cancellationToken);
+            await using var stream = file.OpenReadStream();
+            var publicUrl = await storageService.UploadFileAsync(
+                storageService.TemplatesBucket,
+                objectPath,
+                stream,
+                contentType,
+                cancellationToken);
 
-        return Results.Ok(new { url = publicUrl });
+            return Results.Ok(new { url = publicUrl });
+        }
+
+        // Local dev fallback when Supabase is not configured: return a data URI
+        using var ms = new MemoryStream();
+        await file.CopyToAsync(ms, cancellationToken);
+        var base64 = Convert.ToBase64String(ms.ToArray());
+        return Results.Ok(new { url = $"data:{contentType};base64,{base64}" });
     }
-
-    // Local dev fallback when Supabase is not configured: return a data URI
-    using var ms = new MemoryStream();
-    await file.CopyToAsync(ms, cancellationToken);
-    var base64 = Convert.ToBase64String(ms.ToArray());
-    return Results.Ok(new { url = $"data:{contentType};base64,{base64}" });
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Asset upload failed for file {FileName}", file.FileName);
+        return Results.Json(
+            new { error = ex.Message },
+            statusCode: StatusCodes.Status500InternalServerError);
+    }
 })
 .WithName("UploadTemplateAsset")
 .DisableAntiforgery();
@@ -112,6 +124,47 @@ app.MapPost("/api/documents/preview", async (
     return Results.File(pdfBytes, "application/pdf", "preview.pdf");
 })
 .WithName("PreviewDocument");
+
+app.MapPost("/api/documents/sample-excel", (TemplateConfig? config) =>
+{
+    var fields = (config?.Fields is { Count: > 0 })
+        ? config.Fields.Where(f => !string.IsNullOrWhiteSpace(f.Name)).ToList()
+        : new List<TemplateFieldConfig>
+        {
+            new() { Name = "FullName", SampleValue = "สมชาย ใจดี" },
+            new() { Name = "CourseName", SampleValue = "หลักสูตรการพัฒนาเว็บแอปพลิเคชันยุคใหม่" },
+            new() { Name = "Date", SampleValue = "17 พฤศจิกายน 2569" }
+        };
+
+    using var workbook = new XLWorkbook();
+    var worksheet = workbook.Worksheets.Add("Certificates");
+
+    for (var i = 0; i < fields.Count; i++)
+    {
+        var col = i + 1;
+        var field = fields[i];
+
+        var headerCell = worksheet.Cell(1, col);
+        headerCell.Value = field.Name.Trim();
+        headerCell.Style.Font.Bold = true;
+        headerCell.Style.Fill.BackgroundColor = XLColor.FromHtml("#E0E7FF");
+
+        var sampleCell = worksheet.Cell(2, col);
+        sampleCell.Value = string.IsNullOrWhiteSpace(field.SampleValue)
+            ? $"Sample {field.Name}"
+            : field.SampleValue;
+    }
+
+    worksheet.Columns().AdjustToContents();
+
+    using var ms = new MemoryStream();
+    workbook.SaveAs(ms);
+    return Results.File(
+        ms.ToArray(),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "certificate-template.xlsx");
+})
+.WithName("DownloadSampleExcel");
 
 app.MapPost("/api/documents/generate", async (
     HttpRequest httpRequest,
