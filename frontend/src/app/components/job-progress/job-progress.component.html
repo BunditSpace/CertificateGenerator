@@ -1,0 +1,116 @@
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-5">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 pb-4">
+    <div>
+      <h2 class="text-lg font-semibold text-slate-800">อัปโหลด Excel และสร้างเอกสารแบบกลุ่ม (Batch)</h2>
+      <p class="text-xs text-slate-500 mt-0.5">
+        อัปโหลดไฟล์ <code class="bg-slate-100 px-1 rounded">.xlsx</code> ที่มีหัวตารางตรงกับชื่อฟิลด์ด้านบน ระบบจะประมวลผลแบบ Stream และสร้างไฟล์ ZIP ให้ดาวน์โหลด
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="cursor-pointer rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+        <span>{{ selectedExcelFile ? selectedExcelFile.name : 'เลือกไฟล์ Excel (.xlsx)' }}</span>
+        <input
+          type="file"
+          accept=".xlsx"
+          class="hidden"
+          (change)="onExcelSelected($event)"
+        />
+      </label>
+
+      <button
+        type="button"
+        (click)="startBatchGeneration()"
+        [disabled]="!selectedExcelFile || isSubmitting"
+        class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50 cursor-pointer"
+      >
+        {{ isSubmitting ? 'กำลังส่งคิว...' : 'เริ่มสร้างเอกสารทั้งหมด' }}
+      </button>
+    </div>
+  </div>
+
+  @if (submitError) {
+    <div class="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+      {{ submitError }}
+    </div>
+  }
+
+  @if (jobStatus; as status) {
+    <div class="rounded-xl bg-slate-50 border border-slate-200 p-5 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span class="text-sm font-semibold text-slate-800">Job ID:</span>
+          <code class="text-xs bg-white border border-slate-200 rounded px-2 py-0.5 text-slate-600">
+            {{ status.jobId }}
+          </code>
+          <span
+            [class]="
+              status.status === 'Completed'
+                ? 'bg-emerald-100 text-emerald-800'
+                : status.status === 'Failed'
+                  ? 'bg-red-100 text-red-800'
+                  : 'bg-indigo-100 text-indigo-800'
+            "
+            class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+          >
+            {{ status.status }}
+          </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span class="text-sm font-medium text-slate-700">
+            @if (status.totalRecords > 0) {
+              กำลังสร้าง {{ status.progress }}/{{ status.totalRecords }} ใบ ({{ progressPercentage }}%)
+            } @else {
+              กำลังเตรียมข้อมูล...
+            }
+          </span>
+          <button
+            type="button"
+            (click)="refreshStatus()"
+            class="text-xs text-indigo-600 hover:underline cursor-pointer"
+          >
+            รีเฟรชสถานะ
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+        <div
+          class="h-full transition-all duration-300"
+          [class]="status.status === 'Failed' ? 'bg-red-500' : 'bg-indigo-600'"
+          [style.width.%]="progressPercentage"
+        ></div>
+      </div>
+
+      @if (status.status === 'Failed' && status.errorMessage) {
+        <div class="text-xs text-red-600">
+          ข้อผิดพลาด: {{ status.errorMessage }}
+        </div>
+      }
+
+      @if (status.status === 'Completed') {
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-sm text-emerald-700 font-medium">
+            สร้างเอกสารครบทั้ง {{ status.totalRecords }} รายการเรียบร้อยแล้ว
+          </span>
+          @if (status.zipDownloadUrl) {
+            <a
+              [href]="status.zipDownloadUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+            >
+              Download ZIP
+            </a>
+          } @else {
+            <span class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-1.5">
+              สร้างสำเร็จ (ยังไม่ได้ตั้งค่า Supabase Storage จึงไม่มี URL สำหรับดาวน์โหลด)
+            </span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

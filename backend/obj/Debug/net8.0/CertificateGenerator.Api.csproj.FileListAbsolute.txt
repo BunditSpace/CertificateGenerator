@@ -69,3 +69,4 @@ E:\Angular_.NET\certificate_generator\backend\obj\Debug\net8.0\refint\Certificat
 E:\Angular_.NET\certificate_generator\backend\obj\Debug\net8.0\CertificateGenerator.Api.pdb
 E:\Angular_.NET\certificate_generator\backend\obj\Debug\net8.0\CertificateGenerator.Api.genruntimeconfig.cache
 E:\Angular_.NET\certificate_generator\backend\obj\Debug\net8.0\ref\CertificateGenerator.Api.dll
+E:\Angular_.NET\certificate_generator\backend\obj\Debug\net8.0\CertificateGenerator.Api.sourcelink.json

@@ -1,11 +1,20 @@
 using System.Text.Json;
 using CertificateGenerator.Api.Models;
 using CertificateGenerator.Api.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Bulk Certificate & Payslip Generator API",
+        Version = "v1",
+        Description = "API for template asset upload, single PDF preview, batch Excel-to-PDF generation, and SSE progress streaming."
+    });
+});
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? ["http://localhost:4200"];
 builder.Services.AddCors(options =>
@@ -26,10 +35,14 @@ builder.Services.AddHostedService<DocumentWorker>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue("Swagger:Enabled", true))
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Bulk Certificate Generator API v1");
+        options.RoutePrefix = "swagger";
+    });
 }
 
 app.UseCors();
@@ -38,6 +51,50 @@ var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok", timestamp = DateTimeOffset.UtcNow }))
     .WithName("HealthCheck");
+
+app.MapPost("/api/assets/upload", async (
+    HttpRequest httpRequest,
+    SupabaseStorageService storageService,
+    CancellationToken cancellationToken) =>
+{
+    if (!httpRequest.HasFormContentType)
+    {
+        return Results.BadRequest(new { error = "Expected multipart/form-data request." });
+    }
+
+    var form = await httpRequest.ReadFormAsync(cancellationToken);
+    var file = form.Files.GetFile("file");
+    if (file is null || file.Length == 0)
+    {
+        return Results.BadRequest(new { error = "Image file ('file') is required." });
+    }
+
+    var contentType = string.IsNullOrWhiteSpace(file.ContentType) ? "image/png" : file.ContentType;
+    if (storageService.IsConfigured)
+    {
+        var ext = Path.GetExtension(file.FileName);
+        if (string.IsNullOrWhiteSpace(ext)) ext = ".png";
+        var objectPath = $"{Guid.NewGuid():N}{ext}";
+
+        await using var stream = file.OpenReadStream();
+        var publicUrl = await storageService.UploadFileAsync(
+            storageService.TemplatesBucket,
+            objectPath,
+            stream,
+            contentType,
+            cancellationToken);
+
+        return Results.Ok(new { url = publicUrl });
+    }
+
+    // Local dev fallback when Supabase is not configured: return a data URI
+    using var ms = new MemoryStream();
+    await file.CopyToAsync(ms, cancellationToken);
+    var base64 = Convert.ToBase64String(ms.ToArray());
+    return Results.Ok(new { url = $"data:{contentType};base64,{base64}" });
+})
+.WithName("UploadTemplateAsset")
+.DisableAntiforgery();
 
 app.MapPost("/api/documents/preview", async (
     PreviewRequest request,

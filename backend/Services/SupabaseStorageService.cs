@@ -149,6 +149,17 @@ public sealed class SupabaseStorageService
             return null;
         }
 
+        if (urlOrPath.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+        {
+            var commaIndex = urlOrPath.IndexOf(',');
+            if (commaIndex > 0)
+            {
+                var base64Data = urlOrPath[(commaIndex + 1)..];
+                return Convert.FromBase64String(base64Data);
+            }
+            return null;
+        }
+
         if (Uri.TryCreate(urlOrPath, UriKind.Absolute, out var uri) &&
             (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
         {
