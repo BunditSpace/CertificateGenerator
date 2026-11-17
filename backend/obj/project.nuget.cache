@@ -1,0 +1,122 @@
+{
+  "version": 2,
+  "dgSpecHash": "8HUnnpyjKlU=",
+  "success": true,
+  "projectFilePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\closedxml\\0.104.2\\closedxml.0.104.2.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\closedxml.parser\\1.2.0\\closedxml.parser.1.2.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\documentformat.openxml\\3.1.1\\documentformat.openxml.3.1.1.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\documentformat.openxml.framework\\3.1.1\\documentformat.openxml.framework.3.1.1.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\excelnumberformat\\1.1.0\\excelnumberformat.1.1.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\microsoft.openapi\\1.6.14\\microsoft.openapi.1.6.14.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\questpdf\\2024.10.3\\questpdf.2024.10.3.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\rbush\\4.0.0\\rbush.4.0.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\sixlabors.fonts\\1.0.0\\sixlabors.fonts.1.0.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\sixlabors.imagesharp\\3.1.6\\sixlabors.imagesharp.3.1.6.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\swashbuckle.aspnetcore\\6.9.0\\swashbuckle.aspnetcore.6.9.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.9.0\\swashbuckle.aspnetcore.swagger.6.9.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.9.0\\swashbuckle.aspnetcore.swaggergen.6.9.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.9.0\\swashbuckle.aspnetcore.swaggerui.6.9.0.nupkg.sha512",
+    "C:\\Users\\yhumyhiim\\.nuget\\packages\\system.io.packaging\\8.0.1\\system.io.packaging.8.0.1.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-2cmq-823j-5qj8",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-gwg2-r3hj-4w44",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-j3p4-wp97-rph4",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-j9gm-c75j-xc9q",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-jjfr-hcj7-qf5w",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-rxmq-m78w-7wmc",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known high severity vulnerability, https://github.com/advisories/GHSA-v76p-62qx-wwq2",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'SixLabors.ImageSharp' 3.1.6 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-wmxv-xphr-5c9g",
+      "projectPath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "E:\\Angular_.NET\\certificate_generator\\backend\\CertificateGenerator.Api.csproj",
+      "libraryId": "SixLabors.ImageSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
+}
